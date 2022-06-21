@@ -1,0 +1,24 @@
+pool:
+  name: Azure Pipelines
+  demands: npm
+
+steps:
+- task: Npm@1
+  displayName: 'npm install'
+  inputs:
+    workingDir: 'front-end/'
+    verbose: false
+
+- bash: 'npm run test'
+  workingDirectory: 'front-end/'
+  displayName: 'running tests'
+
+- bash: 'npm run build'
+  workingDirectory: 'front-end/'
+  displayName: 'running build'
+
+- task: ArchiveFiles@2
+  displayName: 'Archive $(Build.BinariesDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
