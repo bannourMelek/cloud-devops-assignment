@@ -3,22 +3,24 @@ pool:
   demands: maven
 
 steps:
-- task: Maven@3
-  displayName: 'Maven pom.xml'
-  inputs:
-    mavenPomFile: '$(Parameters.mavenPOMFile)'
-    jdkVersionOption: 1.11
+  - task: Maven@3
+    displayName: "Maven pom.xml"
+    inputs:
+      mavenPomFile: "$(Parameters.mavenPOMFile)"
+      jdkVersionOption: 1.11
 
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-  inputs:
-    SourceFolder: '$(system.defaultworkingdirectory)'
-    Contents: '**/*.jar'
-    TargetFolder: '$(build.artifactstagingdirectory)'
-  condition: succeededOrFailed()
+  - task: Maven@3
+    displayName: "Build Docker image"
+    inputs:
+      mavenPomFile: "back-end/pom.xml"
+      goals: "spring-boot:build-image"
+      publishJUnitResults: false
+      jdkVersionOption: 1.11
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-  condition: succeededOrFailed()
+  - task: Docker@2
+    displayName: "Push Docker image"
+    inputs:
+      containerRegistry: backendContainerRegistry
+      repository: backend
+      command: push
+      tags: latest
