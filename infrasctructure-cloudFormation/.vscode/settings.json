@@ -1,0 +1,42 @@
+{
+    "[javascript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "editor.codeActionsOnSave": [
+        "source.organizeImports",
+        "source.fixAll.eslint"
+    ],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "eslint.format.enable": true,
+    "eslint.options": {
+        "extensions": [
+            ".ts",
+            ".html",
+            ".graphql"
+        ]
+    },
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "html",
+        "graphql"
+    ],
+    "eslint.workingDirectories": [
+        "./"
+    ],
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+    "typescript.format.enable": false,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false
+}
