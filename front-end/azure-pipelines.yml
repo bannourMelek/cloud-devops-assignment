@@ -1,27 +1,38 @@
-pool:
-  name: Azure Pipelines
-  demands: npm
+# Variable 'deployment_token' was defined in the Variables tab
+trigger:
+  branches:
+    include:
+    - refs/heads/master
 
-variables:
-  deployment_token: '1e146da2c1c390037e569767f22e6af83a3bd48b09204c7c5e38e5874d1d406c1-62d25d7e-1412-45e5-a27d-b79af53d0a08010103834'
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    vmImage: ubuntu-latest
 
-steps:
-- task: Npm@1
-  displayName: 'npm install'
-  inputs:
-    workingDir: 'front-end/'
-    verbose: false
+  steps:
+  - checkout: self
+    clean: true
 
-- bash: 'npm run test'
-  workingDirectory: 'front-end/'
-  displayName: 'running tests'
+  - task: Npm@1
+    displayName: npm install
+    inputs:
+      workingDir: front-end/
+      verbose: false
 
-- task: AzureStaticWebApp@0
-  displayName: 'Deploy to Static Web App'
-  inputs:
-    app_location: 'front-end'
-    output_location: build
-    skip_app_build: false
-    skip_api_build: false
-    verbose: false
-    azure_static_web_apps_api_token: '$(deployment_token)'
+  - task: Bash@3
+    displayName: running tests
+    inputs:
+      targetType: inline
+      script: npm run test
+      workingDirectory: front-end/
+      
+  - task: AzureStaticWebApp@0
+    displayName: Deploy to Static Web App
+    inputs:
+      app_location: front-end
+      output_location: build
+      skip_app_build: false
+      skip_api_build: false
+      verbose: false
+      azure_static_web_apps_api_token: $(deployment_token)

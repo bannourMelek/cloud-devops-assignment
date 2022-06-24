@@ -1,26 +1,42 @@
-pool:
-  name: Azure Pipelines
-  demands: maven
+variables:
+  - name: BuildParameters.mavenPOMFile
+    value: back-end/pom.xml
 
-steps:
-  - task: Maven@3
-    displayName: "Maven pom.xml"
-    inputs:
-      mavenPomFile: "$(Parameters.mavenPOMFile)"
-      jdkVersionOption: 1.11
+name: $(date:yyyyMMdd)$(rev:.r)
+trigger:
+  branches:
+    include:
+    - refs/heads/master
+    
+jobs:
+  - job: Job_1
+    displayName: Agent job 1
+    pool:
+      vmImage: ubuntu-latest
 
-  - task: Maven@3
-    displayName: "Build Docker image"
-    inputs:
-      mavenPomFile: "back-end/pom.xml"
-      goals: "spring-boot:build-image"
-      publishJUnitResults: false
-      jdkVersionOption: 1.11
+    steps:
+    - checkout: self
+      clean: true
 
-  - task: Docker@2
-    displayName: "Push Docker image"
-    inputs:
-      containerRegistry: backendContainerRegistry
-      repository: backend
-      command: push
-      tags: latest
+    - task: Maven@3
+      displayName: Maven pom.xml
+      inputs:
+        mavenPOMFile: $(BuildParameters.mavenPOMFile)
+        jdkVersion: 1.11
+
+    - task: Maven@3
+      displayName: Build Docker image
+      inputs:
+        mavenPOMFile: back-end/pom.xml
+        goals: spring-boot:build-image
+        publishJUnitResults: false
+        jdkVersion: 1.11
+
+    - task: Docker@2
+      displayName: Push Docker image
+      inputs:
+        containerRegistry: d4d5a5a2-3e8c-4f4f-80bc-6821336f2e9c
+        repository: backend
+        command: push
+        tags: latest
+  
