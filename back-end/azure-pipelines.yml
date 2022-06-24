@@ -1,13 +1,12 @@
-variables:
-  - name: BuildParameters.mavenPOMFile
-    value: back-end/pom.xml
-
-name: $(date:yyyyMMdd)$(rev:.r)
 trigger:
   branches:
     include:
     - refs/heads/master
-    
+
+variables:
+  - name: BuildParameters.mavenPOMFile
+    value: back-end/pom.xml
+
 jobs:
   - job: Job_1
     displayName: Agent job 1
