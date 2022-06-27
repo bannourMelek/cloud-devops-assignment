@@ -39,7 +39,6 @@ export class CodePipeline extends cdkpipeline.CodePipeline {
 
     serviceStage.addPost(
       new ShellStep('deleteServiceStack', {
-        input: getSourceInput(stack),
         commands: [
           'aws cloudformation delete-stack CloudDevopsAssignment-Initial/Service/CloudDevopsAssignment-Service',
         ],
