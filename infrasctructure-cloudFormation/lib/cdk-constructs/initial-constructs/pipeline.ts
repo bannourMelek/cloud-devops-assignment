@@ -1,4 +1,5 @@
 import { pipelines as cdkpipeline, Stack } from 'aws-cdk-lib';
+import { ShellStep } from 'aws-cdk-lib/pipelines';
 import { InitialStack } from '../../initial-stack';
 import { APP_NAME } from '../../stack-base';
 import { ServiceStackDemoStage } from './service-stack-stage';
@@ -16,24 +17,32 @@ export class CodePipeline extends cdkpipeline.CodePipeline {
       pipelineName: `${APP_NAME}-Pipeline`,
       synth: new cdkpipeline.ShellStep('Synth', {
         input: getSourceInput(stack),
-        installCommands: ['cd cdk', 'npm ci'],
+        installCommands: ['cd infrasctructure-cloudFormation', 'npm ci'],
         commands: [
           'cd ../lambdas',
           'pip install -r requirements.txt -t .',
-          'pip install -r dev_requirements.txt -t .',
-          'cd ../cdk',
+          'cd ../infrasctructure-cloudFormation',
           'npm run build',
           'npx cdk synth',
         ],
-        primaryOutputDirectory: 'cdk/cdk.out',
+        primaryOutputDirectory: 'infrasctructure-cloudFormation/cdk.out',
       }),
     });
-    this.addStage(
+    const serviceStage = this.addStage(
       new ServiceStackDemoStage(stack, `Service`, {
         env: {
           account: this.node.tryGetContext('env').account,
           region: this.node.tryGetContext('env').region,
         },
+      })
+    );
+
+    serviceStage.addPost(
+      new ShellStep('deleteServiceStack', {
+        input: getSourceInput(stack),
+        commands: [
+          'aws cloudformation delete-stack CloudDevopsAssignment-Initial/Service/CloudDevopsAssignment-Service',
+        ],
       })
     );
   }
